@@ -21,7 +21,7 @@ function criarBG() {
 }
 
 function criarCobrinha() {
-  for(index = 0; index < snake.length; index++) {
+  for(let index = 0; index < snake.length; index++) {
     context.fillStyle = 'green';
     context.fillRect(snake[ index ].x, snake[ index ].y, box, box);
   }
@@ -29,8 +29,15 @@ function criarCobrinha() {
 
 function drawFood() {
   context.fillStyle = 'red';
-  context.fillRect(food.y, food.x, box, box);
+  context.fillRect(food.x, food.y, box, box);
 }
+
+document.addEventListener('keydown', function(event) {
+  if (event.keyCode == 37 && direction != 'right')  { direction = 'left'; }
+  if (event.keyCode == 38 && direction != 'down') { direction = 'up'; }
+  if (event.keyCode == 39 && direction != 'left') { direction = 'right'; }
+  if (event.keyCode == 40 && direction != 'up') { direction = 'down'; }
+});
 
 function iniciarJogo() {
   if (snake[0].x > 15 * box && direction == 'right') {
@@ -48,6 +55,13 @@ function iniciarJogo() {
   if (snake[0].y < 0 && direction == 'up') {
     snake[0].y = 16 * box;
   }
+  
+  for(let index = 1; index < snake.length; index++) {
+    if (snake[0].x == snake[index].x && snake[0].y == snake[index].y) {
+      clearInterval(jogo);
+      alert('Game Over :(');
+    }
+  }
 
   criarBG();
   criarCobrinha();
@@ -61,7 +75,13 @@ function iniciarJogo() {
   if (direction == 'up') snakey -= box;
   if (direction == 'down') snakey += box;
 
-  snake.pop();
+  if (snakex != food.x || snakey != food.y) {
+    snake.pop();
+  }
+  else {
+    food.x = Math.floor(Math.random() * 15 + 1) * box;
+    food.y = Math.floor(Math.random() * 15 + 1) * box;
+  }
 
   let head = {
     x: snakex,
@@ -72,11 +92,5 @@ function iniciarJogo() {
 }
 
 
-document.addEventListener('keydown', function(event) {
-  if (event.keyCode == 37 && direction != 'right')  { direction = 'left'; }
-  if (event.keyCode == 38 && direction != 'down') { direction = 'up'; }
-  if (event.keyCode == 39 && direction != 'left') { direction = 'right'; }
-  if (event.keyCode == 40 && direction != 'up') { direction = 'down'; }
-});
 
 let jogo = setInterval(() => { iniciarJogo(); }, 100);
